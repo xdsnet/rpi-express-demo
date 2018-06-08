@@ -18,23 +18,24 @@
 
 #define SERVER_PORT 5555
 /* 定义LED控制管脚 */
-#define LEDpin 1
+#define LEDpin 5
+#define KEYpin 0
 
 #define LINE_MAX 1024
 
 /* LED控制相关函数 */
 int setLEDon(void){ // 定义亮灯处理
-   //digitalWrite(LEDpin,HIGH); 
+    digitalWrite(LEDpin,HIGH); 
     return HIGH;
 }
   
 int setLEDoff(void){ // 定义灭灯处理
-    //digitalWrite(LEDpin,LOW); 
+    digitalWrite(LEDpin,LOW); 
     return LOW;
 }
   
-int getLED( int flag ){ // 获取灯状态值
-    return flag;
+int getKEY( ){ // 获取灯状态值
+    return digitalRead(KEYpin);
 }
 
 
@@ -59,13 +60,16 @@ int main(){
 	int iDataNum;
 	/* LED状态指示变量,值为 HIGH 表示亮灯, LOW 表示熄灭 */
 	int LEDflag = LOW ;
+	int KEYflag ;
 
 	/* 消息类常量字符串 */
 	char *LED_ON = "on" ;
 	char *LED_OFF = "off" ;
-	char *LED_GET = "get" ;
+	char *KEY_GET = "get" ;
 	char *CLOSE_MSG = "quit";
-/* // 涉及硬件的实现部分 先调通服务程序，后面调试添加
+
+  int Ec=0;
+//* // 涉及硬件的实现部分 先调通服务程序，后面调试添加
   if(-1 == wiringPiSetup() ){
      // 如果不能正确初始化则服务退出
      printf( "Err: init wiring Error!" );
@@ -73,6 +77,7 @@ int main(){
    }
    // 初始化LED所接管脚状态
      pinMode(LEDpin,OUTPUT);  
+     pinMode(KEYpin,INPUT);  
 //*/
     
     //socket函数，失败返回-1
@@ -98,7 +103,7 @@ int main(){
 		return 1;
 	}
     //设置服务器上的socket为监听状态
-	if(listen(serverSocket, 5) < 0) {
+	if(listen(serverSocket, 15) < 0) {
 		perror("listen");
 		return 1;
 	}
@@ -125,9 +130,10 @@ int main(){
 		printf("Port is %d\n", htons(clientAddr.sin_port));
 		while(1){
 			iDataNum = recv(client, buffer, 1024, 0);
-			if(iDataNum < 0)
+			if(iDataNum <= 0)
 			{
-				perror("recv");
+        Ec++;
+        if(Ec>5) break;
 				continue;
 			}
 			buffer[iDataNum] = '\0';
@@ -136,18 +142,20 @@ int main(){
 			}
 		  if(strcmp(buffer, LED_ON) == 0){
         LEDflag=setLEDon();
+        sprintf(rtmsg,"cmd=%s&LEDflag=%d",buffer,LEDflag);
       }
 
 		  if(strcmp(buffer, LED_OFF) == 0){
         LEDflag=setLEDoff();
+        sprintf(rtmsg,"cmd=%s&LEDflag=%d",buffer,LEDflag);
       }
 
-		  if(strcmp(buffer, LED_GET) == 0){
-        LEDflag=getLED( LEDflag );
+		  if(strcmp(buffer, KEY_GET) == 0){
+        KEYflag=getKEY();
+        sprintf(rtmsg,"cmd=%s&KEYflag=%d",buffer,KEYflag);
       }
 
 			printf("server %drecv data is %s\n", iDataNum, buffer);
-      sprintf(rtmsg,"cmd=%s&LEDflag=%d",buffer,LEDflag);
 			send(client, rtmsg,strlen(rtmsg), 0);
 		}
 	}

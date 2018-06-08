@@ -7,7 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var ledon = require('./routes/ledon');
 var ledoff = require('./routes/ledoff');
-var ledget = require('./routes/ledget');
+var keyget = require('./routes/keyget');
 
 // 引入其他路由模块
 var app = express();
@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/ledon', ledon);
 app.use('/ledoff', ledoff);
-app.use('/ledget', ledget);
+app.use('/keyget', keyget);
 // 注册其他路由模块
 
 // catch 404 and forward to error handler

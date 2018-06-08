@@ -12,14 +12,14 @@ router.get('/', function(req, res, next) {
   client.on('data',function(data){
     revData=data.toString();
     console.log(data.toString());
+    res.send(revData);
     client.end();
   });
   client.on('end',function(){
     console.log('断开与服务器的连接');
-    res.send(revData);
   });
   client.write("on");
-  client.write("quit");
+ // client.write("quit");
   //res.send('respond with a resource');
 });
 

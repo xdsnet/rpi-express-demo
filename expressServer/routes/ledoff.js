@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var net = require('net');
 
 var PORT = 5555;
 /* 具体路由模块实现. */
@@ -12,14 +13,14 @@ router.get('/', function(req, res, next) {
   client.on('data',function(data){
     revData=data.toString();
     console.log(data.toString());
+    res.send(revData);
     client.end();
   });
   client.on('end',function(){
     console.log('断开与服务器的连接');
-    res.send(revData);
   });
   client.write("off");
-  client.write("quit");
+ // client.write("quit");
   //res.send('respond with a resource');
 });
 
