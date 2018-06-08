@@ -9,4 +9,4 @@
 
 ## 编译与使用
 1. 在本目录下执行`make`将在bin子目录下生成`rootServer`可执行文件。**注意**编译需要wiringPi库的支持，请提前安装好。
-2. 使用root权限运行`./rootServer`，或者普通用户下以`sudo ./rootServer`运行。并保持运行，以实现服务。
+2. 使用root权限运行`bin/rootServer`，或者普通用户下以`sudo bin/rootServer`运行。并保持运行，以实现服务。
