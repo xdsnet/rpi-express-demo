@@ -42,8 +42,7 @@ int getLED( int flag ){ // 获取灯状态值
  当客户端如数quit后，断开与客户端的连接
  */
 
-int main()
-{
+int main(){
 
     //调用socket函数返回的文件描述符
 	int serverSocket;
@@ -62,7 +61,7 @@ int main()
 	char *LED_ON = "on" ;
 	char *LED_OFF = "off" ;
 	char *LED_GET = "get" ;
-	char *CLOSE_MSG = "close";
+	char *CLOSE_MSG = "quit";
 /* // 涉及硬件的实现部分 先调通服务程序，后面调试添加
   if(-1 == wiringPiSetup() ){
      // 如果不能正确初始化则服务退出
@@ -78,8 +77,7 @@ int main()
     //第一个参数表示使用的地址类型，一般都是ipv4，AF_INET
     //第二个参数表示套接字类型：tcp：面向连接的稳定数据传输SOCK_STREAM
     //第三个参数设置为0
-	if((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-	{
+	if((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("socket");
 		return 1;
 	}
@@ -92,20 +90,17 @@ int main()
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     //对于bind，accept之类的函数，里面套接字参数都是需要强制转换成(struct sockaddr *)
     //bind三个参数：服务器端的套接字的文件描述符，
-    if(bind(serverSocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-	{
+    if(bind(serverSocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0){
 		perror("connect");
 		return 1;
 	}
     //设置服务器上的socket为监听状态
-	if(listen(serverSocket, 5) < 0) 
-	{
+	if(listen(serverSocket, 5) < 0) {
 		perror("listen");
 		return 1;
 	}
 
-	while(1)
-	{
+	while(1){
 		printf("Listening on port: %d\n", SERVER_PORT);
         //调用accept函数后，会进入阻塞状态
         //accept返回一个套接字的文件描述符，这样服务器端便有两个套接字的文件描述符，
@@ -116,8 +111,7 @@ int main()
         //传出的是客户端地址结构体的实际长度。
         //出错返回-1
 		client = accept(serverSocket, (struct sockaddr*)&clientAddr, (socklen_t*)&addr_len);
-		if(client < 0)
-		{
+		if(client < 0){
 			perror("accept");
 			continue;
 		}
@@ -126,8 +120,7 @@ int main()
         //表达式：char *inet_ntoa (struct in_addr);
 		printf("IP is %s\n", inet_ntoa(clientAddr.sin_addr));
 		printf("Port is %d\n", htons(clientAddr.sin_port));
-		while(1)
-		{
+		while(1){
 			iDataNum = recv(client, buffer, 1024, 0);
 			if(iDataNum < 0)
 			{

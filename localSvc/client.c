@@ -1,55 +1,68 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <netinet/in.h>
+/*socket tcp客户端*/
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
-#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#define MAXLINE 1024
-int main(int argc,char **argv)
-{
-	char *servInetAddr = "127.0.0.1";
-	int socketfd;
-	struct sockaddr_in sockaddr;
-	char  recvline[MAXLINE], sendline[MAXLINE];
-	int n;
-    
-	if(argc != 2)
-	{
-			printf("userClient on|off|get\n");
-			exit(0);
+#define SERVER_PORT 5555
+
+/*
+ 连接到服务器后，会不停循环，等待输入，
+ 输入quit后，断开与服务器的连接
+ */
+
+int main(){
+    //客户端只需要一个套接字文件描述符，用于和服务器通信
+	int clientSocket;
+    //描述服务器的socket
+	struct sockaddr_in serverAddr;
+	char sendbuf[200];
+	char recvbuf[200];
+	int iDataNum;
+
+	char *LED_ON = "on" ;
+	char *LED_OFF = "off" ;
+	char *LED_GET = "get" ;
+	char *CLOSE_MSG = "quit";
+
+	if((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+		perror("socket");
+		return 1;
 	}
 
-	socketfd = socket(AF_INET,SOCK_STREAM,0);
-	memset(&sockaddr,0,sizeof(sockaddr));
-	sockaddr.sin_family = AF_INET;
-	sockaddr.sin_port = htons(10004);
-	inet_pton(AF_INET,servInetAddr,&sockaddr.sin_addr);
-    
-	if((connect(socketfd,(struct sockaddr*)&sockaddr,sizeof(sockaddr))) < 0)
-	{
-		printf("connect error %s errno: %d\n",strerror(errno),errno);
-		exit(0);
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(SERVER_PORT);
+    //指定服务器端的ip，本地测试：127.0.0.1
+    //inet_addr()函数，将点分十进制IP转换成网络字节序IP
+	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	if(connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0){
+		perror("connect");
+		return 1;
 	}
 
-	printf("send message to server\n");
+	printf("connect with destination host...\n");
 
-	if( ( strcmp( "on",arg[1] )== 0) || (strcmp("off",arg[1])==0) || (strcmp("get",arg[1])==0){
-		if((send(socketfd,sendline,strlen(sendline),0)) < 0){
-			printf("send mes error: %s errno : %d",strerror(errno),errno);
-			exit(0);
-		}
-		recv(socketfd, recvline, MAXLINE, 0);
-		close(socketfd);
-		printf("recv Msg: %s\n",recvline);
-	} else{
-		printf("CMD is Error！\n CMD: userClient on|off|get\n");
+	while(1){
+		printf("Input your world:>");
+		scanf("%s", sendbuf);
+		printf("\n");
+
+		send(clientSocket, sendbuf, strlen(sendbuf), 0);
+		if(strcmp(sendbuf, CLOSE_MSG) == 0)
+			break;
+		iDataNum = recv(clientSocket, recvbuf, 200, 0);
+		recvbuf[iDataNum] = '\0';
+		printf("recv data of my world is: %s\n", recvbuf);
 	}
-	exit(0);
+	close(clientSocket);
+	return 0;
 }
-
-
