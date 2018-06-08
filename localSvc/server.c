@@ -20,6 +20,8 @@
 /* 定义LED控制管脚 */
 #define LEDpin 1
 
+#define LINE_MAX 1024
+
 /* LED控制相关函数 */
 int setLEDon(void){ // 定义亮灯处理
    //digitalWrite(LEDpin,HIGH); 
@@ -52,7 +54,8 @@ int main(){
 	int addr_len = sizeof(clientAddr);
 	//用于接收连接，因为只有一个，所以同时只允许一个连接
 	int client;
-	char buffer[200];
+	char buffer[ LINE_MAX ];
+	char rtmsg[ LINE_MAX ];
 	int iDataNum;
 	/* LED状态指示变量,值为 HIGH 表示亮灯, LOW 表示熄灭 */
 	int LEDflag = LOW ;
@@ -131,9 +134,21 @@ int main(){
 			if(strcmp(buffer, CLOSE_MSG) == 0){
 				break;
 			}
-			
-			printf("%drecv data is %s\n", iDataNum, buffer);
-			send(client, buffer, iDataNum, 0);
+		  if(strcmp(buffer, LED_ON) == 0){
+        LEDflag=setLEDon();
+      }
+
+		  if(strcmp(buffer, LED_OFF) == 0){
+        LEDflag=setLEDoff();
+      }
+
+		  if(strcmp(buffer, LED_GET) == 0){
+        LEDflag=getLED( LEDflag );
+      }
+
+			printf("server %drecv data is %s\n", iDataNum, buffer);
+      sprintf(rtmsg,"cmd=%s&LEDflag=%d",buffer,LEDflag);
+			send(client, rtmsg,strlen(rtmsg), 0);
 		}
 	}
 	return 0;

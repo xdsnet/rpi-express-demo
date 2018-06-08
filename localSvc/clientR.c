@@ -36,10 +36,10 @@ int main(){
 	char *LED_OFF = "off" ;
 	char *LED_GET = "get" ;
 	char *CLOSE_MSG = "quit";
-  char *cmd[ CMDLEN];
+  char *cmd[CMDLEN];
   cmd[0]=LED_GET;
-  cmd[1]=LED_ON;
-  cmd[2]=LED_OFF;
+  cmd[1]=LED_OFF;
+  cmd[2]=LED_ON;
   cmd[3]=LED_GET;
   cmd[4]=CLOSE_MSG;
 	if((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
