@@ -7,6 +7,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
+
 #define MAXLINE 1024
 int main(int argc,char **argv)
 {
@@ -18,7 +20,7 @@ int main(int argc,char **argv)
     
 	if(argc != 2)
 	{
-			printf("client <ipaddress> \n");
+			printf("userClient on|off|get\n");
 			exit(0);
 	}
 
@@ -36,18 +38,18 @@ int main(int argc,char **argv)
 
 	printf("send message to server\n");
 
-	fgets(sendline,1024,stdin);
-
-    if((send(socketfd,sendline,strlen(sendline),0)) < 0)
-	{
-		printf("send mes error: %s errno : %d",strerror(errno),errno);
-		exit(0);
+	if( ( strcmp( "on",arg[1] )== 0) || (strcmp("off",arg[1])==0) || (strcmp("get",arg[1])==0){
+		if((send(socketfd,sendline,strlen(sendline),0)) < 0){
+			printf("send mes error: %s errno : %d",strerror(errno),errno);
+			exit(0);
+		}
+		recv(socketfd, recvline, MAXLINE, 0);
+		close(socketfd);
+		printf("recv Msg: %s\n",recvline);
+	} else{
+		printf("CMD is Error！\n CMD: userClient on|off|get\n");
 	}
-
-	close(socketfd);
-    printf("exit\n");
 	exit(0);
-   
 }
 
 
