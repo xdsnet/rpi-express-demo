@@ -7,3 +7,6 @@
 ## 目录结构
 1. expressServer: 利用nodejs+express开发，具体express实现远程服务，提供远程api接口。
 2. localSvc:：用C开发，本地硬件访问支持模块等，提供nodejs调用，使其能不用root权限即可监控硬件。
+
+## 测试演示视频
+[https://v.youku.com/v_show/id_XMzY1NDI0NjE5Mg==.html?spm=a2hzp.8244740.0.0](https://v.youku.com/v_show/id_XMzY1NDI0NjE5Mg==.html?spm=a2hzp.8244740.0.0)
